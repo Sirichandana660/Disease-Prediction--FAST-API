@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results | SymptomCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --very-high: #2ecc71;
+            --high: #3498db;
+            --moderate: #f39c12;
+            --low: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        h1 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .selected-symptoms {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .selected-symptoms h2 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .symptoms-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .symptom-tag {
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .results-section h2 {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .results-section h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .result-card {
+            display: flex;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            gap: 1.5rem;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .very-high { background-color: rgba(46, 204, 113, 0.05); }
+        .high { background-color: rgba(52, 152, 219, 0.05); }
+        .moderate { background-color: rgba(243, 156, 18, 0.05); }
+        .low { background-color: rgba(231, 76, 60, 0.05); }
+        
+        .result-info {
+            flex: 1;
+        }
+        
+        .result-card h3 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .confidence {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .very-high .confidence { background: var(--very-high); color: white; }
+        .high .confidence { background: var(--high); color: white; }
+        .moderate .confidence { background: var(--moderate); color: white; }
+        .low .confidence { background: var(--low); color: white; }
+        
+        .probability {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+        
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .very-high .score-circle {
+            background: conic-gradient(var(--very-high) 0% calc(var(--score) * 1%), #e0f7e0 calc(var(--score) * 1%) 100%);
+        }
+        
+        .high .score-circle {
+            background: conic-gradient(var(--high) 0% calc(var(--score) * 1%), #e0f3ff calc(var(--score) * 1%) 100%);
+        }
+        
+        .moderate .score-circle {
+            background: conic-gradient(var(--moderate) 0% calc(var(--score) * 1%), #fff3e0 calc(var(--score) * 1%) 100%);
+        }
+        
+        .low .score-circle {
+            background: conic-gradient(var(--low) 0% calc(var(--score) * 1%), #ffebee calc(var(--score) * 1%) 100%);
+        }
+        
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score-label {
+            font-size: 0.7rem;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .disclaimer {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Diagnosis Results</h1>
+            <p>Based on your reported symptoms</p>
+        </header>
+        
+        <div class="content">
+            <div class="selected-symptoms">
+                <h2>Selected Symptoms</h2>
+                <div class="symptoms-list">
+                    {% for symptom in selected_symptoms %}
+                    <span class="symptom-tag">{{ symptom }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2>Possible Conditions</h2>
+                
+                {% for pred in predictions[:3] %}
+                <div class="result-card {{ pred.confidence|lower|replace(' ', '-') }}" style="--score: {{ pred.score }}">
+                    <div class="result-info">
+                        <h3>{{ pred.disease }}</h3>
+                        <span class="confidence">{{ pred.confidence }} Confidence</span>
+                        <p class="probability">Probability: {{ pred.probability }}</p>
+                    </div>
+                    
+                    <div class="score-circle">
+                        <span class="score-value">{{ pred.score }}</span>
+                        <span class="score-label">Score</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="disclaimer">
+                <p><strong>Important:</strong> This tool provides health information, not medical advice. It cannot diagnose conditions with complete accuracy. Please consult a healthcare professional for proper diagnosis and treatment.</p>
+            </div>
+            
+            <a href="/" class="btn">Check Again</a>
+        </div>
+    </div>
+</body>
+</html>
